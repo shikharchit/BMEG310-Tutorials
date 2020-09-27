@@ -1,0 +1,22 @@
+---
+title: "PT2"
+author: "Shikhar Chitkara"
+date: "27/09/2020"
+output: html_document
+---
+
+**Hello**
+
+*How you doin*
+
+*One
+
+*Two
+
+*Three
+
+#Shikhar
+
+##Chitkara
+
+[Link](https://macreports.com/how-to-create-a-text-txt-file-on-a-mac/)

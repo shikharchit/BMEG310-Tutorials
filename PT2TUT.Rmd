@@ -1,0 +1,14 @@
+---
+title: "PT2TUT"
+author: "Shikhar Chitkara"
+date: "27/09/2020"
+output: html_document
+---
+
+```{r}
+library (readr)
+urlfile="https://raw.githubusercontent.com/bmeg310ubc/bmeg310/master/Tutorial%202/R%20Markdown/data/SalesJan2009.csv"
+newdata<-read_csv(url(urlfile))
+plot(newdata)
+```
+
