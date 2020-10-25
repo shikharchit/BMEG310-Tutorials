@@ -1,0 +1,96 @@
+---
+title: "Tutorial 5"
+author: "Shikhar Chitkara"
+date: "24/10/2020"
+output: html_document
+---
+
+
+
+```{r}
+#chooseCRANmirror()
+#install.packages("BiocManager")
+#library("TCGAbiolinks")
+#BiocManager::install("survival")
+#BiocManager::install("survminer")
+ #BiocManager::install("TCGAbiolinks")
+```
+
+```{r}
+tcga_data = readRDS(file = "tcga_data.RDS")
+colnames(colData(tcga_data))
+table(tcga_data@colData$vital_status)
+```
+```{r}
+table(tcga_data@colData$race)
+```
+
+```{r}
+index<-0
+for (i in tcga_data@colData$race) {
+  if (i == "not reported") {
+    tcga_data@colData$race[index] = "other"
+  }
+  
+  if (i == "american indian or alaska native") {
+    tcga_data@colData$race[index] = "other"
+  }
+  
+  index = index + 1
+}
+print(tcga_data@colData$race)
+```
+```{r}
+dim(assay(tcga_data))
+head(assay(tcga_data)[,1:5])
+```
+
+```{r}
+newd = tcga_data@colData
+dim(newd)
+```
+```{r}
+clin_n = newd[newd$definition == "Primary solid Tumor",
+                    c("patient",
+                      "vital_status",
+                      "days_to_death",
+                      "days_to_last_follow_up",
+                      "gender",
+                      "tumor_stage",
+                      "race")]
+
+```
+```{r}
+clin_n$deceased = clin_n$vital_status == "Dead"
+clin_n$overall_survival = ifelse(clin_n$deceased,
+                                   clin_n$days_to_death,
+                                   clin_n$days_to_last_follow_up)
+head(clin_n)
+```
+
+```{r}
+library("survival")
+Surv(clin_n$overall_survival,clin_n$deceased)
+```
+
+```{r}
+Surv(clin_n$overall_survival, clin_n$deceased) ~ clin_n$race
+```
+
+```{r}
+newfit = survfit(Surv(overall_survival, deceased) ~ race, data=clin_n)
+
+print(newfit)
+```
+
+```{r}
+#install.packages("ggpubr")
+#library("ggpubr")
+
+
+#ggsurvplot(fit, data=clin_n)
+#ggsurvplot(newfit, data=clin_n, pval=T, risk.table=T, risk.table.col="strata")
+
+#Tried removing and adding multiple libraries but keep getting one error or another.
+```
+
