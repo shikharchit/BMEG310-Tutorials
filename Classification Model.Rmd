@@ -1,0 +1,48 @@
+---
+title: "Untitled"
+author: "Shikhar Chitkara"
+date: "10/10/2020"
+output: html_document
+---
+
+```{r}
+#install.packages('ISLR')
+#install.packages('corrplot')
+#install.packages('caret')
+
+require(ISLR)
+head(Smarket)
+library(corrplot)
+library(caret)
+
+
+correlations <- cor(Smarket[,2:4])
+
+corrplot(correlations, method="circle")
+
+x <- Smarket[,2:4]
+
+y <- Smarket[,9]
+
+scales <- list(x=list(relation="free"), y=list(relation="free"))
+
+featurePlot(x=x, y=y, plot="density", scales=scales)
+
+glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3, data = Smarket, family = binomial)
+
+summary(glm.fit)
+
+glm.probs <- predict(glm.fit,type = "response")
+
+glm.probs[1:5]
+
+glm.pred <- ifelse(glm.probs > 0.5, "Up", "Down")
+
+attach(Smarket)
+
+table(glm.pred,Direction)
+
+mean(glm.pred == Direction)
+
+```
+

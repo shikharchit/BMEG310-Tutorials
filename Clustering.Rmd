@@ -1,0 +1,69 @@
+---
+title: "Clustering"
+author: "Shikhar Chitkara"
+date: "10/10/2020"
+output: html_document
+---
+
+```{r}
+new_data <- read.csv("https://raw.githubusercontent.com/bmeg310ubc/bmeg310/master/Tutorial%203/data/seeds_dataset.txt" ,sep = '\t',header = FALSE)
+head(new_data)
+feature_name <- c('area','perimeter','compactness','length.of.kernel','width.of.kernal','asymmetry.coefficient','length.of.kernel.groove','type.of.seed')
+colnames(new_data) <- feature_name
+str(new_data)
+any(is.na(new_data))
+seeds_label <- new_data$type.of.seed
+new_data$type.of.seed <- NULL
+data_seeds_norm <- as.data.frame(scale(new_data))
+summary(data_seeds_norm)
+dist_mat <- dist(data_seeds_norm, method = 'euclidean')
+
+hclust_avg <- hclust(dist_mat, method = 'average')
+hclust_com <- hclust(dist_mat, method = 'complete')
+
+plot(hclust_com)
+plot(hclust_avg)
+
+cut_avg <- cutree(hclust_avg, k = 3)
+cut_com <- cutree(hclust_com, k = 3)
+
+plot(hclust_avg)
+plot(hclust_com)
+
+rect.hclust(hclust_avg , k = 3, border = 2:6)
+rect.hclust(hclust_com , k = 3, border = 2:6)
+
+abline(h = 3, col = 'red')
+
+suppressPackageStartupMessages(library(dplyr))
+
+data_seeds_cl <- mutate(new_data, cluster = cut_avg)
+data_seeds_cl2 <- mutate(new_data, cluster = cut_com)
+
+count(data_seeds_cl,cluster)
+count(data_seeds_cl2,cluster)
+
+
+suppressPackageStartupMessages(library(ggplot2))
+ggplot(data_seeds_cl, aes(x=area, y = perimeter, color = factor(cluster))) + geom_point()
+ggplot(data_seeds_cl2, aes(x=area, y = perimeter, color = factor(cluster))) + geom_point()
+
+
+mtcars.pca <- prcomp(mtcars[,c(1:7,10,11)], center = TRUE,scale. = TRUE)
+summary(mtcars.pca)
+str(mtcars.pca)
+
+
+library(devtools)
+library(ggbiplot)
+#install_github("vqv/ggbiplot")
+
+ggbiplot(mtcars.pca)
+ggbiplot(mtcars.pca, labels=rownames(mtcars),var.axes=FALSE,labels='PCA CLusteriing')
+mtcars.country <- c(rep("Japan", 3), rep("US",4), rep("Europe", 7),rep("US",3), "Europe", rep("Japan", 3), rep("US",4), rep("Europe", 3), "US", rep("Europe", 3))
+ggbiplot(mtcars.pca,ellipse=TRUE, labels=rownames(mtcars), groups=mtcars.country, var.axes = F) + ggtitle("Characterization of cars from different places")
+
+ggbiplot(mtcars.pca,ellipse=TRUE, labels=rownames(mtcars), groups=mtcars.country)
+
+```
+
